@@ -3,11 +3,11 @@ const mongoose = require('mongoose');
 const doctorSchema = new mongoose.Schema({
   name: String,
   passwordDigest: String,
-  principlePracticeSuburb: Text,
-  principlePracticeState: Text,
-  principlePracticePostcode: Text,
-  principlePracticeCountry: Text,
-  profession: Text,
+  principlePracticeSuburb: String,
+  principlePracticeState: String,
+  principlePracticePostcode: String,
+  principlePracticeCountry: String,
+  profession: String,
   registrationNumber: String,
 }); // doctorSchema
 
