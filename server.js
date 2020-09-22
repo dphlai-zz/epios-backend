@@ -46,14 +46,14 @@ app.listen(PORT, () => {
 // -------------------------------- ROUTES --------------------------------  //
 
 // LOGIN
-app.post('/login', async (req, res) => {
+app.post('/login/doctors', async (req, res) => {
 
   try {
     const {email, password} = req.body;
     const doctor = await Doctor.findOne({email});
 
-    if(!doctor){
-      return res.status(401).json({error: 'Login failed! Check authentication credentials.'})
+    if(!doctor) {
+      return res.status(401).json({error: 'Login failed! Check authentication credentials.'});
     } // if
 
     const token = await jwt.sign(
@@ -66,14 +66,46 @@ app.post('/login', async (req, res) => {
       {expiresIn: '72h'}
     ); // jwt.sign()
 
+    res.json({doctor, token, success: true});
+
   } catch(err) {
     res.status(500).json({error: err});
   }
 
-}); // POST /login
+}); // POST /login/doctors
+
+// curl -XPOST -d '{"email":"goose@ga.co", "password":"chicken"}' http://localhost:2854/doctors/login -H 'content-type: application/json'
+
+app.post('/login/pharmacists', async (req, res) => {
+
+  try {
+    const {email, password} = req.body;
+    const pharmacist = await Pharmacist.findOne({email});
+
+    if(!pharmacist) {
+      return res.status(401).json({error: 'Login failed! Check authentication credentials.'});
+    } // if
+
+    const token = await jwt.sign(
+      {
+        _id: doctor._id,
+        email: pharmacist.email,
+        name: pharmacist.name
+      },
+      SERVER_SECRET_KEY,
+      {expiresIn: '72h'}
+    ); // jwt.sign()
+
+  } catch(err) {
+    res.status(500).json({error: err});
+  }
+
+}); // POST /login/pharmacists
+
+// curl -XPOST -d '{"email":"goose@ga.co", "password":"chicken"}' http://localhost:2854/doctors/login -H 'content-type: application/json'
 
 // CREATE
-app.post('/doctors', async (req, res) => {
+app.post('/doctors', checkAuth(), async (req, res) => {
 
   const doctor = new Doctor(req.body);
 
@@ -101,7 +133,7 @@ app.post('/pharmacists', async (req, res) => {
 
 }); // POST /pharmacists
 
-app.post('prescriptions', async (req, res) => {
+app.post('/prescriptions', async (req, res) => {
   const prescription = new Prescription(req.body);
 
   try {
@@ -284,7 +316,7 @@ app.delete('/prescriptions/:id', async (req, res) => {
 
 // curl -XPOST -d '{"name":"Nar Kotics", "password":"chicken", "principlePracticeSuburb":"Footscray", "principlePracticeState":"VIC", "principlePracticePostcode":"4567", "principlePracticeCountry":"Australia", "registrationNumber":"WOOF12345"}' http://localhost:2854/pharmacists -H 'content-type: application/json'
 
-// curl -XPOST -d '{"patientName":"Mr. Frank Hop", "patientMedicareNumber":"987651", "patientAddress":"456 Pineapple Avenue, Mandarin VIC 3400", "itemName":"Telfast", "dosageInstructions":"3 times a day until complete.", "quantity":"1", "issuedByDoctor":"", "filledByPharmacist":""}' http://localhost:2854/prescriptions -H 'content-type: application/json'
+// curl -XPOST -d '{"patientName":"Mr. Frank Hop", "patientMedicareNumber":"987651", "patientAddress":"456 Pineapple Avenue, Mandarin VIC 3400", "itemName":"Telfast", "dosageInstructions":"3 times a day until complete.", "quantity":"1", "issuedByDoctor":"5f6954cd273ff8210f731387", "filledByPharmacist":"5f6954ce273ff8210f731389"}' http://localhost:2854/prescriptions -H 'content-type: application/json'
 
 // curl -XPATCH -d '{"name":"Dr. Eddy Smith", "password":"chicken", "principlePracticeSuburb":"Brisbane", "principlePracticeState":"VIC", "principlePracticePostcode":"3245", "principlePracticeCountry":"New Zealand", "profession":"Podiatrist", "registrationNumber":"WOOF12345"}' http://localhost:2854/doctors/<OBJECT ID> -H 'content-type: application/json'
 
