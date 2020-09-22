@@ -16,6 +16,6 @@ const prescriptionSchema = new mongoose.Schema({
    ref: 'Pharmacist',
    type: mongoose.Schema.Types.ObjectId,
  }
-}); // prescriptionSchema
+}, {timestamps: true}); // prescriptionSchema
 
 module.exports = mongoose.model('Prescription', prescriptionSchema)

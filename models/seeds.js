@@ -121,7 +121,7 @@ const seedPrescriptions = async (doctors, pharmacists) => {
       },
       {
         patientName: 'Ms. Jane Smith',
-        patientMedicareNumber: '2367281',
+        patientMedicareNumber: '9873221',
         patientAddress: '234 Pear Street, Strawberry NSW 2222',
         itemName: 'Nurofen',
         dosageInstructions: '2 tablets at night until complete. Take with meal.',

@@ -9,6 +9,6 @@ const pharmacistSchema = new mongoose.Schema({
   principlePracticePostcode: String,
   principlePracticeCountry: String,
   registrationNumber: String
-}); // pharmacistSchema
+}, {timestamps: true}); // pharmacistSchema
 
 module.exports = mongoose.model('Pharmacist', pharmacistSchema);

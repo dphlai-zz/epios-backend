@@ -10,6 +10,6 @@ const doctorSchema = new mongoose.Schema({
   principlePracticeCountry: String,
   profession: String,
   registrationNumber: String,
-}); // doctorSchema
+}, {timestamps: true}); // doctorSchema
 
 module.exports = mongoose.model('Doctor', doctorSchema);

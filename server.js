@@ -50,23 +50,29 @@ app.post('/login/doctors', async (req, res) => {
 
   try {
     const {email, password} = req.body;
-    const doctor = await Doctor.findOne({email, password});
+    const doctor = await Doctor.findOne({email});
 
     if(!doctor) {
       return res.status(401).json({error: 'Login failed! Check authentication credentials.'});
     } // if
 
-    const token = await jwt.sign(
-      {
-        _id: doctor._id,
-        email: doctor.email,
-        name: doctor.name
-      },
-      SERVER_SECRET_KEY,
-      {expiresIn: '72h'}
-    ); // jwt.sign()
+    if(doctor && bcrypt.compareSync(password, doctor.passwordDigest)){
 
-    res.json({doctor, token, success: true});
+      const token = await jwt.sign(
+        {
+          _id: doctor._id,
+          email: doctor.email,
+          name: doctor.name
+        },
+        SERVER_SECRET_KEY,
+        {expiresIn: '72h'}
+      ); // jwt.sign()
+
+      res.json({doctor, token, success: true});
+
+    } else {
+      return res.json({error: 'Incorrect password.'})
+    } // if else
 
   } catch(err) {
     res.status(500).json({error: err});
@@ -80,23 +86,30 @@ app.post('/login/pharmacists', async (req, res) => {
 
   try {
     const {email, password} = req.body;
-    const pharmacist = await Pharmacist.findOne({email, password});
+    const pharmacist = await Pharmacist.findOne({email});
 
     if(!pharmacist) {
       return res.status(401).json({error: 'Login failed! Check authentication credentials.'});
     } // if
 
-    const token = await jwt.sign(
-      {
-        _id: pharmacist._id,
-        email: pharmacist.email,
-        name: pharmacist.name
-      },
-      SERVER_SECRET_KEY,
-      {expiresIn: '72h'}
-    ); // jwt.sign()
+    if(pharmacist && bcrypt.compareSync(password, pharmacist.passwordDigest)){
 
-    res.json({pharmacist, token, success: true});
+      const token = await jwt.sign(
+        {
+          _id: pharmacist._id,
+          email: pharmacist.email,
+          name: pharmacist.name
+        },
+        SERVER_SECRET_KEY,
+        {expiresIn: '72h'}
+      ); // jwt.sign()
+
+      res.json({pharmacist, token, success: true});
+
+    } else {
+      return res.json({error: 'Incorrect password.'})
+    } // if else
+
 
   } catch(err) {
     res.status(500).json({error: err});
@@ -107,7 +120,7 @@ app.post('/login/pharmacists', async (req, res) => {
 // curl -XPOST -d '{"email":"jen@ga.co", "password":"chicken"}' http://localhost:2854/login/pharmacists -H 'content-type: application/json'
 
 // CREATE
-app.post('/doctors', checkAuth(), async (req, res) => {
+app.post('/doctors', async (req, res) => {
 
   const doctor = new Doctor(req.body);
 
@@ -121,7 +134,7 @@ app.post('/doctors', checkAuth(), async (req, res) => {
 
 }); // POST /doctors
 
-app.post('/pharmacists', checkAuth(), async (req, res) => {
+app.post('/pharmacists', async (req, res) => {
 
   const pharmacist = new Pharmacist(req.body);
 
@@ -135,7 +148,8 @@ app.post('/pharmacists', checkAuth(), async (req, res) => {
 
 }); // POST /pharmacists
 
-app.post('/prescriptions', checkAuth(), async (req, res) => {
+app.post('/prescriptions', async (req, res) => {
+
   const prescription = new Prescription(req.body);
 
   try {
@@ -149,7 +163,7 @@ app.post('/prescriptions', checkAuth(), async (req, res) => {
 }) // POST /prescriptions
 
 // READ
-app.get('/', checkAuth(), async (req, res) => {
+app.get('/', async (req, res) => {
 
   try {
     res.json({root: 'SEI37 Project Three!'})
@@ -160,7 +174,7 @@ app.get('/', checkAuth(), async (req, res) => {
 
 }); // GET /
 
-app.get('/doctors', checkAuth(), async (req, res) => {
+app.get('/doctors', async (req, res) => {
 
   try {
     const doctors = await Doctor.find({});
@@ -173,7 +187,7 @@ app.get('/doctors', checkAuth(), async (req, res) => {
 
 }); // GET /doctors
 
-app.get('/doctors/:id', checkAuth(), async (req, res) => {
+app.get('/doctors/:id', async (req, res) => {
 
   try {
     const doctor = await Doctor.findOne({_id: req.params.id});
@@ -185,7 +199,7 @@ app.get('/doctors/:id', checkAuth(), async (req, res) => {
 
 }); // GET /doctors/:id
 
-app.get('/pharmacists', checkAuth(), async (req, res) => {
+app.get('/pharmacists', async (req, res) => {
 
   try {
     const pharmacists = await Pharmacist.find({});
@@ -198,7 +212,7 @@ app.get('/pharmacists', checkAuth(), async (req, res) => {
 
 }); // GET /pharmacists
 
-app.get('/pharmacists/:id', checkAuth(), async (req, res) => {
+app.get('/pharmacists/:id', async (req, res) => {
 
   try {
     const pharmacist = await Pharmacist.findOne({_id: req.params.id});
@@ -210,7 +224,7 @@ app.get('/pharmacists/:id', checkAuth(), async (req, res) => {
 
 }); // GET /pharmacists/:id
 
-app.get('/prescriptions', checkAuth(), async (req, res) => {
+app.get('/prescriptions', async (req, res) => {
 
   try {
     const prescriptions = await Prescription.find({})
@@ -224,7 +238,7 @@ app.get('/prescriptions', checkAuth(), async (req, res) => {
 
 }); // GET /prescriptions
 
-app.get('/prescriptions/:id', checkAuth(), async (req, res) => {
+app.get('/prescriptions/:id', async (req, res) => {
 
   try {
     const prescription = await Prescription.findOne({_id: req.params.id})
@@ -239,7 +253,7 @@ app.get('/prescriptions/:id', checkAuth(), async (req, res) => {
 }); // GET /prescriptions/:id
 
 // UPDATE
-app.patch('/doctors/:id', checkAuth(), async (req, res) => {
+app.patch('/doctors/:id', async (req, res) => {
 
   try {
     const doctor = await Doctor.findByIdAndUpdate(req.params.id, req.body);
@@ -252,7 +266,7 @@ app.patch('/doctors/:id', checkAuth(), async (req, res) => {
 
 }); // PATCH /doctors/:id
 
-app.patch('/pharmacists/:id', checkAuth(), async (req, res) => {
+app.patch('/pharmacists/:id', async (req, res) => {
 
   try {
     const pharmacist = await Pharmacist.findByIdAndUpdate(req.params.id, req.body);
@@ -265,7 +279,8 @@ app.patch('/pharmacists/:id', checkAuth(), async (req, res) => {
 
 }); // PATCH /pharmacists/:id
 
-app.patch('/prescriptions/:id', checkAuth(), async (req, res) => {
+app.patch('/prescriptions/:id', async (req, res) => {
+
   try {
     const prescription = await Prescription.findByIdAndUpdate(req.params.id, req.body);
     await prescription.save();
@@ -278,7 +293,7 @@ app.patch('/prescriptions/:id', checkAuth(), async (req, res) => {
 }); // PATCH /prescriptions/:id
 
 // DELETE
-app.delete('/doctors/:id', checkAuth(), async (req, res) => {
+app.delete('/doctors/:id', async (req, res) => {
 
   try {
     const doctor = await Doctor.findByIdAndDelete(req.params.id);
@@ -290,7 +305,7 @@ app.delete('/doctors/:id', checkAuth(), async (req, res) => {
 
 }) // DELETE /doctors/:id
 
-app.delete('/pharmacists/:id', checkAuth(), async (req, res) => {
+app.delete('/pharmacists/:id', async (req, res) => {
 
   try {
     const pharmacist = await Pharmacist.findByIdAndDelete(req.params.id);
@@ -302,7 +317,7 @@ app.delete('/pharmacists/:id', checkAuth(), async (req, res) => {
 
 }) // DELETE /pharmacists/:id
 
-app.delete('/prescriptions/:id', checkAuth(), async (req, res) => {
+app.delete('/prescriptions/:id', async (req, res) => {
 
   try {
     const prescription = await Prescription.findByIdAndDelete(req.params.id);
