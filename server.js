@@ -45,23 +45,34 @@ app.listen(PORT, () => {
 
 // -------------------------------- ROUTES --------------------------------  //
 
-app.get('/', (req, res) => {
-  res.send('SEI37 Project Three!')
-});
-
-app.get('/doctors', async (req, res) => {
+// LOGIN
+app.post('/login', async (req, res) => {
 
   try {
-    const doctors = await Doctor.find({});
-    res.json(doctors);
-    // res.json(await Doctor.find())
+    const {email, password} = req.body;
+    const doctor = await Doctor.findOne({email});
+
+    if(!doctor){
+      return res.status(401).json({error: 'Login failed! Check authentication credentials.'})
+    } // if
+
+    const token = await jwt.sign(
+      {
+        _id: doctor._id,
+        email: doctor.email,
+        name: doctor.name
+      },
+      SERVER_SECRET_KEY,
+      {expiresIn: '72h'}
+    ); // jwt.sign()
+
   } catch(err) {
-    console.log('Query error:', err);
-    res.sendStatus(500);
+    res.status(500).json({error: err});
   }
 
-}); // GET /doctors
+}); // POST /login
 
+// CREATE
 app.post('/doctors', async (req, res) => {
 
   const doctor = new Doctor(req.body);
@@ -74,17 +85,71 @@ app.post('/doctors', async (req, res) => {
     res.status(500).json({error: err});
   }
 
-}) // POST /doctors
+}); // POST /doctors
 
-app.patch('/doctors/:id', async (req, res) => {
+app.post('/pharmacists', async (req, res) => {
+
+  const pharmacist = new Pharmacist(req.body);
 
   try {
-
+    await pharmacist.save();
+    res.json(pharmacist);
   } catch(err) {
-
+    console.log('Query error:', err);
+    res.status(500).json({error: err})
   }
 
-}) // PATCH /doctors
+}); // POST /pharmacists
+
+app.post('prescriptions', async (req, res) => {
+  const prescription = new Prescription(req.body);
+
+  try {
+    await prescription.save();
+    res.json(prescription);
+  } catch(err) {
+    console.log('Query error:', err);
+    res.status(500).json({error: err})
+  }
+
+}) // POST /prescriptions
+
+// READ
+app.get('/', async (req, res) => {
+
+  try {
+    res.json({root: 'SEI37 Project Three!'})
+  } catch (err) {
+    console.log('Query error:', err);
+    res.sendStatus(500).json({error: err});
+  }
+
+}); // GET /
+
+app.get('/doctors', async (req, res) => {
+
+  try {
+    const doctors = await Doctor.find({});
+    res.json(doctors);
+    // res.json(await Doctor.find())
+  } catch(err) {
+    console.log('Query error:', err);
+    res.sendStatus(500).json({error: err});
+  }
+
+}); // GET /doctors
+
+app.get('/doctors/:id', async (req, res) => {
+
+  try {
+    const doctor = await Doctor.findOne({_id: req.params.id});
+    res.json(doctor);
+  } catch(err) {
+    console.log('Query error:', err);
+    res.sendStatus(500).json({error: err});
+  }
+
+}); // GET /doctors/:id
 
 app.get('/pharmacists', async (req, res) => {
 
@@ -94,10 +159,22 @@ app.get('/pharmacists', async (req, res) => {
     // res.json(await Pharmacist.find())
   } catch(err) {
     console.log('Query error:', err);
-    res.sendStatus(500);
+    res.sendStatus(500).json({error: err});
   }
 
 }); // GET /pharmacists
+
+app.get('/pharmacists/:id', async (req, res) => {
+
+  try {
+    const pharmacist = await Pharmacist.findOne({_id: req.params.id});
+    res.json(pharmacist);
+  } catch(err) {
+    console.log('Query error:', err);
+    res.sendStatus(500).json({error: err});
+  }
+
+}); // GET /pharmacists/:id
 
 app.get('/prescriptions', async (req, res) => {
 
@@ -108,9 +185,115 @@ app.get('/prescriptions', async (req, res) => {
     res.json(prescriptions);
   } catch(err) {
     console.log('Query error:', err);
-    res.sentStatus(500);
+    res.sentStatus(500).json({error: err});
   }
 
 }); // GET /prescriptions
 
-// curl -XPOST -d '{ "name":"Dr. Ruby Bark", "password":"chicken", "principlePracticeSuburb":"Cairns", "principlePracticeState":"QLD", "principlePracticePostcode":"3123", "principlePracticeCountry":"Australia", "profession":"Podiatrist", "registrationNumber":"WOOF12345" }' http://localhost:2854/doctors -H 'content-type: application/json'
+app.get('/prescriptions/:id', async (req, res) => {
+
+  try {
+    const prescription = await Prescription.findOne({_id: req.params.id})
+    .populate('issuedByDoctor')
+    .populate('filledByPharmacist');
+    res.json(prescription);
+  } catch(err) {
+    console.log('Query error:', err);
+    res.sendStatus(500).json({error: err});
+  }
+
+}); // GET /prescriptions/:id
+
+// UPDATE
+app.patch('/doctors/:id', async (req, res) => {
+
+  try {
+    const doctor = await Doctor.findByIdAndUpdate(req.params.id, req.body);
+    await doctor.save();
+    res.json(doctor);
+  } catch(err) {
+    console.log('Query error:', err);
+    res.status(500).json({error: err});
+  }
+
+}); // PATCH /doctors/:id
+
+app.patch('/pharmacists/:id', async (req, res) => {
+
+  try {
+    const pharmacist = await Pharmacist.findByIdAndUpdate(req.params.id, req.body);
+    await pharmacist.save();
+    res.json(pharmacist);
+  } catch(err) {
+    console.log('Query error:', err);
+    res.status(500).json({error: err});
+  }
+
+}); // PATCH /pharmacists/:id
+
+app.patch('/prescriptions/:id', async (req, res) => {
+  try {
+    const prescription = await Prescription.findByIdAndUpdate(req.params.id, req.body);
+    await prescription.save();
+    res.json(prescription);
+  } catch(err) {
+    console.log('Query error:', err);
+    res.status(500).json({error: err});
+  }
+
+}); // PATCH /prescriptions/:id
+
+// DELETE
+app.delete('/doctors/:id', async (req, res) => {
+
+  try {
+    const doctor = await Doctor.findByIdAndDelete(req.params.id);
+    if(!doctor) res.status(404).json({notFound: true});
+    res.status(200).json({success: true});
+  } catch(err) {
+    res.status(500).json({error: err});
+  }
+
+}) // DELETE /doctors/:id
+
+app.delete('/pharmacists/:id', async (req, res) => {
+
+  try {
+    const pharmacist = await Pharmacist.findByIdAndDelete(req.params.id);
+    if(!pharmacist) res.status(404).json({notFound: true});
+    res.status(200).json({sucess: true});
+  } catch(err) {
+    res.status(500).json({error: err});
+  }
+
+}) // DELETE /pharmacists/:id
+
+app.delete('/prescriptions/:id', async (req, res) => {
+
+  try {
+    const prescription = await Prescription.findByIdAndDelete(req.params.id);
+    if(!prescription) res.staus(404).json({notFound: true});
+    res.status(200).json({success: true});
+  } catch(err) {
+    res.status(500).json({error: err})
+  }
+
+}); // DELETE /pharmacists/:id
+
+// curl -XPOST -d '{"name":"Dr. Ruby Bark", "password":"chicken", "principlePracticeSuburb":"Cairns", "principlePracticeState":"QLD", "principlePracticePostcode":"3123", "principlePracticeCountry":"Australia", "profession":"Podiatrist", "registrationNumber":"WOOF12345"}' http://localhost:2854/doctors -H 'content-type: application/json'
+
+// curl -XPOST -d '{"name":"Nar Kotics", "password":"chicken", "principlePracticeSuburb":"Footscray", "principlePracticeState":"VIC", "principlePracticePostcode":"4567", "principlePracticeCountry":"Australia", "registrationNumber":"WOOF12345"}' http://localhost:2854/pharmacists -H 'content-type: application/json'
+
+// curl -XPOST -d '{"patientName":"Mr. Frank Hop", "patientMedicareNumber":"987651", "patientAddress":"456 Pineapple Avenue, Mandarin VIC 3400", "itemName":"Telfast", "dosageInstructions":"3 times a day until complete.", "quantity":"1", "issuedByDoctor":"", "filledByPharmacist":""}' http://localhost:2854/prescriptions -H 'content-type: application/json'
+
+// curl -XPATCH -d '{"name":"Dr. Eddy Smith", "password":"chicken", "principlePracticeSuburb":"Brisbane", "principlePracticeState":"VIC", "principlePracticePostcode":"3245", "principlePracticeCountry":"New Zealand", "profession":"Podiatrist", "registrationNumber":"WOOF12345"}' http://localhost:2854/doctors/<OBJECT ID> -H 'content-type: application/json'
+
+// curl -XPATCH -d '{"name":"Phar Macist", "password":"chicken", "principlePracticeSuburb":"Perth", "principlePracticeState":"WA", "principlePracticePostcode":"6877", "principlePracticeCountry":"Antarctica", "registrationNumber":"QUACK12345"}' http://localhost:2854/pharmacists/5f6962d8eecb8a25c26edc5b -H 'content-type: application/json'
+
+// curl -XPATCH -d '{"patientName":"Mr. Frank Hop", "patientMedicareNumber":"987651", "patientAddress":"456 Pineapple Avenue, Mandarin VIC 3400", "itemName":"Telfast", "dosageInstructions":"3 times a day until complete.", "quantity":"1", "issuedByDoctor":"", "filledByPharmacist":""}' http://localhost:2854/pharmacists/5f6962d8eecb8a25c26edc5b -H 'content-type: application/json'
+
+// curl -XDELETE http://localhost:2854/doctors/<OBJECT ID>
+
+// curl -XDELETE http://localhost:2854/pharmacists/<OBJECT ID>
+
+// curl -XDELETE http://localhost:2854/prescriptions/<OBJECT ID>
