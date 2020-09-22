@@ -73,7 +73,8 @@ app.post('/login/doctors', async (req, res) => {
   }
 
 }); // POST /login/doctors
-// curl -XPOST -d '{"email":"goose@ga.co", "password":"tht"}' http://localhost:2854/login/doctors -H 'content-type: application/json'
+
+// curl -XPOST -d '{"email":"goose@ga.co", "password":"chicken"}' http://localhost:2854/login/doctors -H 'content-type: application/json'
 
 app.post('/login/pharmacists', async (req, res) => {
 
@@ -95,12 +96,15 @@ app.post('/login/pharmacists', async (req, res) => {
       {expiresIn: '72h'}
     ); // jwt.sign()
 
+    res.json({pharmacist, token, success: true});
+
   } catch(err) {
     res.status(500).json({error: err});
   }
 
 }); // POST /login/pharmacists
-// curl -XPOST -d '{"email":"celd@ga.co", "password":"chicken"}' http://localhost:2854/login/pharmacists -H 'content-type: application/json'
+
+// curl -XPOST -d '{"email":"jen@ga.co", "password":"chicken"}' http://localhost:2854/login/pharmacists -H 'content-type: application/json'
 
 // CREATE
 app.post('/doctors', checkAuth(), async (req, res) => {
