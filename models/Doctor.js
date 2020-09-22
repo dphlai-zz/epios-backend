@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const doctorSchema = new mongoose.Schema({
   name: String,
+  email: String,
   passwordDigest: String,
   principlePracticeSuburb: String,
   principlePracticeState: String,

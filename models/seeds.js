@@ -9,6 +9,7 @@ mongoose.connect('mongodb://localhost/p3', {
   useUnifiedTopology: true});
 
 const db = mongoose.connection;
+
 db.on('error', console.error.bind(console, 'connection error:'));
 
 db.once('open', async () => {
@@ -38,6 +39,7 @@ const seedDoctors = async () => {
     return await Doctor.create([
       {
         name: 'Dr. Goose Duck',
+        email: 'goose@ga.co',
         passwordDigest: bcrypt.hashSync('chicken', 10),
         principlePracticeSuburb: 'Sydney',
         principlePracticeState: 'NSW',
@@ -48,6 +50,7 @@ const seedDoctors = async () => {
       },
       {
         name: 'Dr. Frankie Bun',
+        email: 'frankie@ga.co',
         passwordDigest: bcrypt.hashSync('chicken', 10),
         principlePracticeSuburb: 'Ashfield',
         principlePracticeState: 'NSW',
@@ -73,6 +76,7 @@ const seedPharmacists = async () => {
     return await Pharmacist.create([
       {
         name: 'Celd Rugs',
+        email: 'celd@ga.co',
         passwordDigest: bcrypt.hashSync('chicken', 10),
         principlePracticeSuburb: 'Sydney',
         principlePracticeState: 'NSW',
@@ -82,6 +86,7 @@ const seedPharmacists = async () => {
       },
       {
         name: 'Jen Eric',
+        email: 'jen@ga.co',
         passwordDigest: bcrypt.hashSync('chicken', 10),
         principlePracticeSuburb: 'Gladesville',
         principlePracticeState: 'NSW',
