@@ -4,7 +4,10 @@ const Pharmacist = require('../models/Pharmacist');
 const Prescription = require('../models/Prescription');
 const bcrypt = require('bcrypt');
 
-mongoose.connect('mongodb://localhost/p3', {userNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect('mongodb://localhost/p3', {
+  userNewUrlParser: true,
+  useUnifiedTopology: true});
+
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 
@@ -108,8 +111,8 @@ const seedPrescriptions = async (doctors, pharmacists) => {
         itemName: 'Panadol',
         dosageInstructions: '2 tablets morning and night until complete. Take with meal.',
         quantity: '1',
-        issuedByDoctor: doctors[0]._id,
-        filledByPharmacist: pharmacists[0]._id,
+        issuedByDoctor: doctors[0]._id, // req.user._id
+        filledByPharmacist: pharmacists[0]._id, // req.user._id
       },
       {
         patientName: 'Ms. Jane Smith',
