@@ -50,7 +50,7 @@ app.post('/login/doctors', async (req, res) => {
 
   try {
     const {email, password} = req.body;
-    const doctor = await Doctor.findOne({email});
+    const doctor = await Doctor.findOne({email, password});
 
     if(!doctor) {
       return res.status(401).json({error: 'Login failed! Check authentication credentials.'});
@@ -73,14 +73,13 @@ app.post('/login/doctors', async (req, res) => {
   }
 
 }); // POST /login/doctors
-
-// curl -XPOST -d '{"email":"goose@ga.co", "password":"chicken"}' http://localhost:2854/doctors/login -H 'content-type: application/json'
+// curl -XPOST -d '{"email":"goose@ga.co", "password":"tht"}' http://localhost:2854/login/doctors -H 'content-type: application/json'
 
 app.post('/login/pharmacists', async (req, res) => {
 
   try {
     const {email, password} = req.body;
-    const pharmacist = await Pharmacist.findOne({email});
+    const pharmacist = await Pharmacist.findOne({email, password});
 
     if(!pharmacist) {
       return res.status(401).json({error: 'Login failed! Check authentication credentials.'});
@@ -88,7 +87,7 @@ app.post('/login/pharmacists', async (req, res) => {
 
     const token = await jwt.sign(
       {
-        _id: doctor._id,
+        _id: pharmacist._id,
         email: pharmacist.email,
         name: pharmacist.name
       },
@@ -101,8 +100,7 @@ app.post('/login/pharmacists', async (req, res) => {
   }
 
 }); // POST /login/pharmacists
-
-// curl -XPOST -d '{"email":"goose@ga.co", "password":"chicken"}' http://localhost:2854/doctors/login -H 'content-type: application/json'
+// curl -XPOST -d '{"email":"celd@ga.co", "password":"chicken"}' http://localhost:2854/login/pharmacists -H 'content-type: application/json'
 
 // CREATE
 app.post('/doctors', checkAuth(), async (req, res) => {
@@ -119,7 +117,7 @@ app.post('/doctors', checkAuth(), async (req, res) => {
 
 }); // POST /doctors
 
-app.post('/pharmacists', async (req, res) => {
+app.post('/pharmacists', checkAuth(), async (req, res) => {
 
   const pharmacist = new Pharmacist(req.body);
 
@@ -133,7 +131,7 @@ app.post('/pharmacists', async (req, res) => {
 
 }); // POST /pharmacists
 
-app.post('/prescriptions', async (req, res) => {
+app.post('/prescriptions', checkAuth(), async (req, res) => {
   const prescription = new Prescription(req.body);
 
   try {
@@ -147,7 +145,7 @@ app.post('/prescriptions', async (req, res) => {
 }) // POST /prescriptions
 
 // READ
-app.get('/', async (req, res) => {
+app.get('/', checkAuth(), async (req, res) => {
 
   try {
     res.json({root: 'SEI37 Project Three!'})
@@ -158,7 +156,7 @@ app.get('/', async (req, res) => {
 
 }); // GET /
 
-app.get('/doctors', async (req, res) => {
+app.get('/doctors', checkAuth(), async (req, res) => {
 
   try {
     const doctors = await Doctor.find({});
@@ -171,7 +169,7 @@ app.get('/doctors', async (req, res) => {
 
 }); // GET /doctors
 
-app.get('/doctors/:id', async (req, res) => {
+app.get('/doctors/:id', checkAuth(), async (req, res) => {
 
   try {
     const doctor = await Doctor.findOne({_id: req.params.id});
@@ -183,7 +181,7 @@ app.get('/doctors/:id', async (req, res) => {
 
 }); // GET /doctors/:id
 
-app.get('/pharmacists', async (req, res) => {
+app.get('/pharmacists', checkAuth(), async (req, res) => {
 
   try {
     const pharmacists = await Pharmacist.find({});
@@ -196,7 +194,7 @@ app.get('/pharmacists', async (req, res) => {
 
 }); // GET /pharmacists
 
-app.get('/pharmacists/:id', async (req, res) => {
+app.get('/pharmacists/:id', checkAuth(), async (req, res) => {
 
   try {
     const pharmacist = await Pharmacist.findOne({_id: req.params.id});
@@ -208,7 +206,7 @@ app.get('/pharmacists/:id', async (req, res) => {
 
 }); // GET /pharmacists/:id
 
-app.get('/prescriptions', async (req, res) => {
+app.get('/prescriptions', checkAuth(), async (req, res) => {
 
   try {
     const prescriptions = await Prescription.find({})
@@ -222,7 +220,7 @@ app.get('/prescriptions', async (req, res) => {
 
 }); // GET /prescriptions
 
-app.get('/prescriptions/:id', async (req, res) => {
+app.get('/prescriptions/:id', checkAuth(), async (req, res) => {
 
   try {
     const prescription = await Prescription.findOne({_id: req.params.id})
@@ -237,7 +235,7 @@ app.get('/prescriptions/:id', async (req, res) => {
 }); // GET /prescriptions/:id
 
 // UPDATE
-app.patch('/doctors/:id', async (req, res) => {
+app.patch('/doctors/:id', checkAuth(), async (req, res) => {
 
   try {
     const doctor = await Doctor.findByIdAndUpdate(req.params.id, req.body);
@@ -250,7 +248,7 @@ app.patch('/doctors/:id', async (req, res) => {
 
 }); // PATCH /doctors/:id
 
-app.patch('/pharmacists/:id', async (req, res) => {
+app.patch('/pharmacists/:id', checkAuth(), async (req, res) => {
 
   try {
     const pharmacist = await Pharmacist.findByIdAndUpdate(req.params.id, req.body);
@@ -263,7 +261,7 @@ app.patch('/pharmacists/:id', async (req, res) => {
 
 }); // PATCH /pharmacists/:id
 
-app.patch('/prescriptions/:id', async (req, res) => {
+app.patch('/prescriptions/:id', checkAuth(), async (req, res) => {
   try {
     const prescription = await Prescription.findByIdAndUpdate(req.params.id, req.body);
     await prescription.save();
@@ -276,7 +274,7 @@ app.patch('/prescriptions/:id', async (req, res) => {
 }); // PATCH /prescriptions/:id
 
 // DELETE
-app.delete('/doctors/:id', async (req, res) => {
+app.delete('/doctors/:id', checkAuth(), async (req, res) => {
 
   try {
     const doctor = await Doctor.findByIdAndDelete(req.params.id);
@@ -288,7 +286,7 @@ app.delete('/doctors/:id', async (req, res) => {
 
 }) // DELETE /doctors/:id
 
-app.delete('/pharmacists/:id', async (req, res) => {
+app.delete('/pharmacists/:id', checkAuth(), async (req, res) => {
 
   try {
     const pharmacist = await Pharmacist.findByIdAndDelete(req.params.id);
@@ -300,7 +298,7 @@ app.delete('/pharmacists/:id', async (req, res) => {
 
 }) // DELETE /pharmacists/:id
 
-app.delete('/prescriptions/:id', async (req, res) => {
+app.delete('/prescriptions/:id', checkAuth(), async (req, res) => {
 
   try {
     const prescription = await Prescription.findByIdAndDelete(req.params.id);
