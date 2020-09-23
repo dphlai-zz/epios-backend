@@ -68,7 +68,14 @@ app.post('/login/doctors', async (req, res) => {
         {expiresIn: '72h'}
       ); // jwt.sign()
 
-      res.json({doctor, token, success: true});
+      res.json({
+        user: {
+          name: doctor.name,
+          type: 'doctor'
+        },
+        token,
+        success: true
+      });
 
     } else {
       return res.json({error: 'Incorrect password.'})
@@ -104,7 +111,14 @@ app.post('/login/pharmacists', async (req, res) => {
         {expiresIn: '72h'}
       ); // jwt.sign()
 
-      res.json({pharmacist, token, success: true});
+      res.json({
+        user: {
+          name: pharmacist.name,
+          type: 'pharmacist'
+        },
+        token,
+        success: true
+      });
 
     } else {
       return res.json({error: 'Incorrect password.'})
