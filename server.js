@@ -62,7 +62,8 @@ app.post('/login/doctors', async (req, res) => {
         {
           _id: doctor._id,
           email: doctor.email,
-          name: doctor.name
+          name: doctor.name,
+          type: 'doctor'
         },
         SERVER_SECRET_KEY,
         {expiresIn: '72h'}
@@ -105,7 +106,8 @@ app.post('/login/pharmacists', async (req, res) => {
         {
           _id: pharmacist._id,
           email: pharmacist.email,
-          name: pharmacist.name
+          name: pharmacist.name,
+          type: 'pharmacist'
         },
         SERVER_SECRET_KEY,
         {expiresIn: '72h'}
@@ -309,7 +311,9 @@ app.patch('/prescriptions/:id/fill', checkAuth(), async (req, res) => {
   try {
     const prescription = await Prescription.findByIdAndUpdate(req.params.id, {
       $set: {filledByPharmacist: req.user._id}
-    });
+    }, {new: true})
+    .populate('issuedByDoctor')
+    .populate('filledByPharmacist');
     res.json(prescription);
   } catch(err) {
     console.log('Query error:', err);
