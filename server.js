@@ -162,9 +162,15 @@ app.post('/pharmacists', async (req, res) => {
 
 }); // POST /pharmacists
 
-app.post('/prescriptions', async (req, res) => {
+app.post('/prescriptions', checkAuth(), async (req, res) => {
+
+  if(req.user.type !== 'doctor'){
+    console.log('Incorrect user type.');
+    return res.status(401).json({error: 'Incorrect user type.'});
+  }
 
   const prescription = new Prescription(req.body);
+  prescription.issuedByDoctor = req.user._id
 
   try {
     await prescription.save();
@@ -293,11 +299,17 @@ app.patch('/pharmacists/:id', async (req, res) => {
 
 }); // PATCH /pharmacists/:id
 
-app.patch('/prescriptions/:id', async (req, res) => {
+app.patch('/prescriptions/:id/fill', checkAuth(), async (req, res) => {
+
+  if(req.user.type !== 'pharmacist'){
+    console.log('Incorrect user type.', req);
+    return res.status(401).json({error: 'Incorrect user type.'});
+  }
 
   try {
-    const prescription = await Prescription.findByIdAndUpdate(req.params.id, req.body);
-    await prescription.save();
+    const prescription = await Prescription.findByIdAndUpdate(req.params.id, {
+      $set: {filledByPharmacist: req.user._id}
+    });
     res.json(prescription);
   } catch(err) {
     console.log('Query error:', err);
