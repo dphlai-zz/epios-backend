@@ -136,7 +136,7 @@ app.post('/login/pharmacists', async (req, res) => {
 // curl -XPOST -d '{"email":"jen@ga.co", "password":"chicken"}' http://localhost:2854/login/pharmacists -H 'content-type: application/json'
 
 // CREATE
-app.post('/doctors', async (req, res) => {
+app.post('/doctors', checkAuth(), async (req, res) => {
 
   const doctor = new Doctor(req.body);
 
@@ -150,7 +150,7 @@ app.post('/doctors', async (req, res) => {
 
 }); // POST /doctors
 
-app.post('/pharmacists', async (req, res) => {
+app.post('/pharmacists', checkAuth(), async (req, res) => {
 
   const pharmacist = new Pharmacist(req.body);
 
@@ -185,7 +185,7 @@ app.post('/prescriptions', checkAuth(), async (req, res) => {
 }) // POST /prescriptions
 
 // READ
-app.get('/', async (req, res) => {
+app.get('/', checkAuth(), async (req, res) => {
 
   try {
     res.json({root: 'SEI37 Project Three!'})
@@ -196,7 +196,7 @@ app.get('/', async (req, res) => {
 
 }); // GET /
 
-app.get('/doctors', async (req, res) => {
+app.get('/doctors', checkAuth(), async (req, res) => {
 
   try {
     const doctors = await Doctor.find({});
@@ -209,7 +209,7 @@ app.get('/doctors', async (req, res) => {
 
 }); // GET /doctors
 
-app.get('/doctors/:id', async (req, res) => {
+app.get('/doctors/:id', checkAuth(), async (req, res) => {
 
   try {
     const doctor = await Doctor.findOne({_id: req.params.id});
@@ -221,7 +221,7 @@ app.get('/doctors/:id', async (req, res) => {
 
 }); // GET /doctors/:id
 
-app.get('/pharmacists', async (req, res) => {
+app.get('/pharmacists', checkAuth(), async (req, res) => {
 
   try {
     const pharmacists = await Pharmacist.find({});
@@ -234,7 +234,7 @@ app.get('/pharmacists', async (req, res) => {
 
 }); // GET /pharmacists
 
-app.get('/pharmacists/:id', async (req, res) => {
+app.get('/pharmacists/:id', checkAuth(), async (req, res) => {
 
   try {
     const pharmacist = await Pharmacist.findOne({_id: req.params.id});
@@ -246,7 +246,7 @@ app.get('/pharmacists/:id', async (req, res) => {
 
 }); // GET /pharmacists/:id
 
-app.get('/prescriptions', async (req, res) => {
+app.get('/prescriptions', checkAuth(), async (req, res) => {
 
   try {
     const prescriptions = await Prescription.find({})
@@ -260,7 +260,7 @@ app.get('/prescriptions', async (req, res) => {
 
 }); // GET /prescriptions
 
-app.get('/prescriptions/:id', async (req, res) => {
+app.get('/prescriptions/:id', checkAuth(), async (req, res) => {
 
   try {
     const prescription = await Prescription.findOne({_id: req.params.id})
@@ -275,7 +275,7 @@ app.get('/prescriptions/:id', async (req, res) => {
 }); // GET /prescriptions/:id
 
 // UPDATE
-app.patch('/doctors/:id', async (req, res) => {
+app.patch('/doctors/:id', checkAuth(), async (req, res) => {
 
   try {
     const doctor = await Doctor.findByIdAndUpdate(req.params.id, req.body);
@@ -288,7 +288,7 @@ app.patch('/doctors/:id', async (req, res) => {
 
 }); // PATCH /doctors/:id
 
-app.patch('/pharmacists/:id', async (req, res) => {
+app.patch('/pharmacists/:id', checkAuth(), async (req, res) => {
 
   try {
     const pharmacist = await Pharmacist.findByIdAndUpdate(req.params.id, req.body);
@@ -323,7 +323,7 @@ app.patch('/prescriptions/:id/fill', checkAuth(), async (req, res) => {
 }); // PATCH /prescriptions/:id
 
 // DELETE
-app.delete('/doctors/:id', async (req, res) => {
+app.delete('/doctors/:id', checkAuth(), async (req, res) => {
 
   try {
     const doctor = await Doctor.findByIdAndDelete(req.params.id);
@@ -335,7 +335,7 @@ app.delete('/doctors/:id', async (req, res) => {
 
 }) // DELETE /doctors/:id
 
-app.delete('/pharmacists/:id', async (req, res) => {
+app.delete('/pharmacists/:id', checkAuth(), async (req, res) => {
 
   try {
     const pharmacist = await Pharmacist.findByIdAndDelete(req.params.id);
@@ -347,7 +347,7 @@ app.delete('/pharmacists/:id', async (req, res) => {
 
 }) // DELETE /pharmacists/:id
 
-app.delete('/prescriptions/:id', async (req, res) => {
+app.delete('/prescriptions/:id', checkAuth(), async (req, res) => {
 
   try {
     const prescription = await Prescription.findByIdAndDelete(req.params.id);

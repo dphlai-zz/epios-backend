@@ -49,8 +49,8 @@ const seedDoctors = async () => {
         registrationNumber: 'ABC123456',
       },
       {
-        name: 'Dr. Frankie Bun',
-        email: 'frankie@ga.co',
+        name: 'Dr. Doc Torr',
+        email: 'doc@ga.co',
         passwordDigest: bcrypt.hashSync('chicken', 10),
         principlePracticeSuburb: 'Ashfield',
         principlePracticeState: 'NSW',
