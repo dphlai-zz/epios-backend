@@ -376,21 +376,3 @@ app.delete('/prescriptions/:id', checkAuth(), async (req, res) => {
   }
 
 }); // DELETE /pharmacists/:id
-
-// curl -XPOST -d '{"name":"Dr. Ruby Bark", "password":"chicken", "principlePracticeSuburb":"Cairns", "principlePracticeState":"QLD", "principlePracticePostcode":"3123", "principlePracticeCountry":"Australia", "profession":"Podiatrist", "registrationNumber":"WOOF12345"}' http://localhost:2854/doctors -H 'content-type: application/json'
-
-// curl -XPOST -d '{"name":"Nar Kotics", "password":"chicken", "principlePracticeSuburb":"Footscray", "principlePracticeState":"VIC", "principlePracticePostcode":"4567", "principlePracticeCountry":"Australia", "registrationNumber":"WOOF12345"}' http://localhost:2854/pharmacists -H 'content-type: application/json'
-
-// curl -XPOST -d '{"patientName":"Mr. Frank Hop", "patientMedicareNumber":"987651", "patientAddress":"456 Pineapple Avenue, Mandarin VIC 3400", "itemName":"Telfast", "dosageInstructions":"3 times a day until complete.", "quantity":"1", "issuedByDoctor":"5f6954cd273ff8210f731387", "filledByPharmacist":"5f6954ce273ff8210f731389"}' http://localhost:2854/prescriptions -H 'content-type: application/json'
-
-// curl -XPATCH -d '{"name":"Dr. Eddy Smith", "password":"chicken", "principlePracticeSuburb":"Brisbane", "principlePracticeState":"VIC", "principlePracticePostcode":"3245", "principlePracticeCountry":"New Zealand", "profession":"Podiatrist", "registrationNumber":"WOOF12345"}' http://localhost:2854/doctors/<OBJECT ID> -H 'content-type: application/json'
-
-// curl -XPATCH -d '{"name":"Phar Macist", "password":"chicken", "principlePracticeSuburb":"Perth", "principlePracticeState":"WA", "principlePracticePostcode":"6877", "principlePracticeCountry":"Antarctica", "registrationNumber":"QUACK12345"}' http://localhost:2854/pharmacists/5f6962d8eecb8a25c26edc5b -H 'content-type: application/json'
-
-// curl -XPATCH -d '{"patientName":"Mr. Frank Hop", "patientMedicareNumber":"987651", "patientAddress":"456 Pineapple Avenue, Mandarin VIC 3400", "itemName":"Telfast", "dosageInstructions":"3 times a day until complete.", "quantity":"1", "issuedByDoctor":"", "filledByPharmacist":""}' http://localhost:2854/pharmacists/5f6962d8eecb8a25c26edc5b -H 'content-type: application/json'
-
-// curl -XDELETE http://localhost:2854/doctors/<OBJECT ID>
-
-// curl -XDELETE http://localhost:2854/pharmacists/<OBJECT ID>
-
-// curl -XDELETE http://localhost:2854/prescriptions/<OBJECT ID>
