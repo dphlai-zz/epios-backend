@@ -10,6 +10,10 @@ const doctorSchema = new mongoose.Schema({
   principlePracticeCountry: String,
   profession: String,
   registrationNumber: String,
+  issuedPrescriptions: [{
+    ref: 'Prescription',
+    type: mongoose.Schema.Types.ObjectId
+  }]
 }, {timestamps: true}); // doctorSchema
 
 module.exports = mongoose.model('Doctor', doctorSchema);

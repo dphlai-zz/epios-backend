@@ -171,11 +171,14 @@ app.post('/prescriptions', checkAuth(), async (req, res) => {
     return res.status(401).json({error: 'Incorrect user type.'});
   }
 
-  const prescription = new Prescription(req.body);
-  prescription.issuedByDoctor = req.user._id
-
   try {
+    const prescription = new Prescription(req.body);
+    const doctor = await Doctor.findById(req.user._id)
+    console.log({doctor}, req.user);
+    prescription.issuedByDoctor = req.user._id
     await prescription.save();
+    await doctor.issuedPrescriptions.push(prescription._id)
+    await doctor.save();
     res.json(prescription);
   } catch(err) {
     console.log('Query error:', err);
@@ -199,7 +202,8 @@ app.get('/', checkAuth(), async (req, res) => {
 app.get('/doctors', checkAuth(), async (req, res) => {
 
   try {
-    const doctors = await Doctor.find({});
+    const doctors = await Doctor.find({})
+    .populate('issuedPrescriptions');
     res.json(doctors);
     // res.json(await Doctor.find())
   } catch(err) {
@@ -259,6 +263,20 @@ app.get('/prescriptions', checkAuth(), async (req, res) => {
   }
 
 }); // GET /prescriptions
+
+app.get('/prescription-history', checkAuth(), async (req, res) => {
+
+  try {
+    const doctor = await Doctor.findById(req.user._id)
+    .populate('issuedPrescriptions');
+    const prescriptions = doctor.issuedPrescriptions
+    res.json(prescriptions);
+  } catch(err) {
+    console.log('Query error:', err);
+    res.sentStatus(500).json({error: err});
+  }
+
+}); // GET /prescription-history
 
 app.get('/prescriptions/:id', checkAuth(), async (req, res) => {
 
