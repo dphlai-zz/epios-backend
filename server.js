@@ -24,8 +24,7 @@ const checkAuth = () => {
   });
 }; // checkAuth
 
-// TODO: Move into .env or .bash_profile
-const SERVER_SECRET_KEY = 'notVerySecretKey!!111'
+const SERVER_SECRET_KEY = process.env.SERVER_SECRET_KEY
 
 //  -------------------- EXPRESS SERVER INITIALISATION --------------------  //
 
