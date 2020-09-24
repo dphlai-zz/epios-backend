@@ -3,8 +3,9 @@ const Doctor = require('../models/Doctor');
 const Pharmacist = require('../models/Pharmacist');
 const Prescription = require('../models/Prescription');
 const bcrypt = require('bcrypt');
+const dotenv = require('dotenv').config();
 
-mongoose.connect('mongodb://localhost/p3', {
+mongoose.connect(process.env.MONGO_URI, {
   userNewUrlParser: true,
   useUnifiedTopology: true});
 
@@ -117,7 +118,7 @@ const seedPrescriptions = async (doctors, pharmacists) => {
         dosageInstructions: '2 tablets morning and night until complete. Take with meal.',
         quantity: '1',
         issuedByDoctor: doctors[0]._id, // req.user._id
-        filledByPharmacist: pharmacists[0]._id, // req.user._id
+        // filledByPharmacist: pharmacists[0]._id, // req.user._id
       },
       {
         patientName: 'Ms. Jane Smith',
@@ -127,7 +128,7 @@ const seedPrescriptions = async (doctors, pharmacists) => {
         dosageInstructions: '2 tablets at night until complete. Take with meal.',
         quantity: '1',
         issuedByDoctor: doctors[1]._id,
-        filledByPharmacist: pharmacists[1]._id
+        // filledByPharmacist: pharmacists[1]._id
       },
 
     ]); // Prescription.create()

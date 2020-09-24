@@ -5,8 +5,9 @@ const jwtAuthenticate = require('express-jwt');
 const Doctor = require('./models/Doctor');
 const Pharmacist = require('./models/Pharmacist');
 const Prescription = require('./models/Prescription');
+const dotenv = require('dotenv').config();
 
-mongoose.connect('mongodb://localhost/p3', {
+mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true});
 
@@ -30,7 +31,7 @@ const SERVER_SECRET_KEY = 'notVerySecretKey!!111'
 
 const express = require('express');
 const app = express();
-const PORT = 2854;
+const PORT = process.env.PORT || 2854;
 const cors = require('cors');
 
 app.use(cors());
